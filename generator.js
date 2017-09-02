@@ -1,5 +1,6 @@
 var Generator = {
     Grid: function() {
+        this.ctx = Config.ctx;
 
         this.grid = []
         this.width = 10;
@@ -44,13 +45,13 @@ var Generator = {
                 agentPrevTile = agentTempTile;
                 switch(agentDir) {
                     case 0:
-                        agentCurTile+=(this.height+1);
+                        agentCurTile+=(this.height);
                         break;
                     case 1:
                         agentCurTile++;
                         break;
                     case 2:
-                        agentCurTile-=(this.height-1);
+                        agentCurTile-=(this.height);
                         break
                     case 3:
                         agentCurTile--;
@@ -79,6 +80,23 @@ var Generator = {
 
         this.render = function() {
             // Renders the canvas depending on the grid
+            var tile = -1;
+            for(var x = 0; x < this.width; x++) {
+                for(var y = 0; y < this.height; y++) {
+                    tile++;
+                    this.ctx.fillStyle="#000000";
+                    if(this.grid[tile] == 0) {
+                        
+                    }
+                    else if(this.grid[tile] == 1) {
+                        this.ctx.fillRect(x * 16, y * 16, 16, 16);
+                    } 
+                    else {
+                        this.ctx.fillStyle="#FF0000";
+                        this.ctx.fillRect(x * 16, y * 16, 16, 16);
+                    }
+                }
+            }
         }
 
     }

@@ -1,4 +1,9 @@
 var Config = {
+    canvas: document.querySelector('canvas'),
+    ctx: document.querySelector('canvas').getContext("2d"),
+    canvasWidth: 800,
+    canvasHeight: 600,
+
     gridWidth: 100,
     gridHeight: 100,
 
