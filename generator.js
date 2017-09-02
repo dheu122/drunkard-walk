@@ -3,6 +3,7 @@ var Generator = {
         this.ctx = Config.ctx;
 
         this.grid = []
+        this.border = [];
         this.width = 10;
         this.height = 10;
 
@@ -14,6 +15,7 @@ var Generator = {
         this.init = function(options) {
             // Inits a clean grid with a randomized agent placement and options reset
             this.grid = [];
+            this.border = [];
             this.width = options.width;
             this.height = options.height;
             
@@ -22,14 +24,19 @@ var Generator = {
 
             this.gridTotal = this.width * this.height;
 
-            for(var i = 0; i < this.width * this.height; i++) {
-                this.grid.push(1)
+            for(var x = 0; x < this.width; x++) {
+                for(var y = 0; y < this.height; y++) {
+                    if(this.grid.length == x * this.width || this.grid.length == x * this.width + this.height - 1 || this.grid.length < this.height || (this.grid.length < this.gridTotal && this.grid.length > this.gridTotal - this.height)) {
+                        this.border.push(this.grid.length);
+                    }
+                    this.grid.push(1);
+                }
             }
         }
 
         this.generate = function() {
             // Starts moving the agent depending on options
-            var agentStartPosition = Math.floor(Math.random() * (this.gridTotal - 1));
+            var agentStartPosition = getAgentStartPosition(this.gridTotal, this.border);
             var agentTempTile = 0;
             var agentPrevTile = 0;
             var agentCurTile = agentStartPosition;
@@ -43,6 +50,7 @@ var Generator = {
                 // Agent makes decisions here and changes the grid array;
                 agentTempTile = agentCurTile;
                 agentPrevTile = agentTempTile;
+
                 switch(agentDir) {
                     case 0:
                         agentCurTile++;
@@ -58,24 +66,20 @@ var Generator = {
                         break;
                 }
 
-                if(agentCurTile < 0 || agentCurTile >= this.gridTotal) {
+                if(isBorderTile(agentCurTile, this.border)) {
                     agentCurTile = agentTempTile;
-                    agentDir = Math.floor(Math.random() * 3);
+                    agentDir = Math.floor(Math.random() * 4);
                 }
-                else {
-                    this.grid[agentPrevTile] = 0;
-                    this.grid[agentCurTile] = 2;
-                }
+                this.grid[agentPrevTile] = 0;
+                this.grid[agentCurTile] = 2;
 
                 agentDirChangePercentage = Math.random();
                 if(agentDirChangePercentage > this.agentDirChangePercentage) {
-                    agentDir = Math.floor(Math.random() * 3);
+                    agentDir = Math.floor(Math.random() * 4);
                 }
 
                 agentRunTime++;
             }
-            console.log(this.grid);
-
         }
 
         this.render = function() {
@@ -85,18 +89,34 @@ var Generator = {
                 for(var y = 0; y < this.height; y++) {
                     tile++;
                     this.ctx.fillStyle="#000000";
-                    if(this.grid[tile] == 0) {
-                        
-                    }
-                    else if(this.grid[tile] == 1) {
+                    if(this.grid[tile] == 1) {
                         this.ctx.fillRect(x * 16, y * 16, 16, 16);
-                    } 
-                    else {
+                    }
+                    else if(this.grid[tile] == 2) {
                         this.ctx.fillStyle="#FF0000";
                         this.ctx.fillRect(x * 16, y * 16, 16, 16);
                     }
                 }
             }
+        }
+
+        function isBorderTile(tile, border) {
+            if(border == []) {return false;}
+
+            for(var i = 0; i < border.length; i++) {
+                if(border[i] == tile) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function getAgentStartPosition(gridTotal, border) {
+            var startPosition = Math.floor(Math.random() * (gridTotal - 1));
+            while(isBorderTile(startPosition, border)) {
+                startPosition = Math.floor(Math.random() * (gridTotal - 1));
+            }
+            return startPosition;
         }
 
     }
