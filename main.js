@@ -1,10 +1,10 @@
-var canvas = Config.canvas;
-
-canvas.height = Config.canvasHeight;
-canvas.width = Config.canvasWidth;
-
 // Runs the actual algorithm
 var grid = new Generator.Grid();
+var canvas = Config.canvas;
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener('resize', resizeCanvas, false);
 
 grid.init({
     width: 35,
@@ -16,3 +16,9 @@ grid.init({
 grid.generate();
 
 grid.render();
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    grid.render();
+}
