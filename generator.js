@@ -45,16 +45,16 @@ var Generator = {
                 agentPrevTile = agentTempTile;
                 switch(agentDir) {
                     case 0:
-                        agentCurTile+=(this.height);
-                        break;
-                    case 1:
                         agentCurTile++;
                         break;
+                    case 1:
+                        agentCurTile+=(this.height);
+                        break;
                     case 2:
-                        agentCurTile-=(this.height);
+                        agentCurTile--;
                         break
                     case 3:
-                        agentCurTile--;
+                        agentCurTile-=(this.height);
                         break;
                 }
 
