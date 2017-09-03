@@ -7,8 +7,14 @@ var Generator = {
         this.width = 10;
         this.height = 10;
 
+        this.roomWidthMin = 3;
+        this.roomWidthMax = 3;
+        this.roomHeightMin = 3;
+        this.roomHeightMax = 3;
+
         this.agentRunTime = 100;
         this.agentDirChangePercentage = 0.25;
+        this.agentRoomPlacementPercentage = 0.25;
 
         this.gridTotal = 0;
 
@@ -18,9 +24,15 @@ var Generator = {
             this.border = [];
             this.width = options.width;
             this.height = options.height;
+
+            this.roomWidthMin = options.roomWidthMin;
+            this.roomWidthMax = options.roomWidthMax;
+            this.roomHeightMin = options.roomHeightMin;
+            this.roomHeightMax = options.roomHeightMax;
             
             this.agentMaxRunTime = options.agentMaxRunTime;
             this.agentDirChangePercentage = options.agentDirChangePercentage;
+            this.agentRoomPlacementPercentage = options.agentRoomPlacementPercentage;
 
             this.gridTotal = this.width * this.height;
 
@@ -43,6 +55,8 @@ var Generator = {
             var agentDirChangePercentage = 0;
             var agentDir = 0;
             var agentRunTime = 0;
+
+            var roomTiles = [];
 
             this.grid[agentStartPosition] = 2;
 
@@ -73,6 +87,16 @@ var Generator = {
                 this.grid[agentPrevTile] = 0;
                 this.grid[agentCurTile] = 2;
 
+                agentRoomPlacementPercentage = Math.random();
+                if(agentRoomPlacementPercentage > this.agentRoomPlacementPercentage) {
+                    roomTiles = getRoomTiles(agentCurTile, this.roomWidthMin, this.roomWidthMax, this.roomHeightMin, this.roomHeightMax, this.border, this.width);
+                    if(roomTiles != []) {
+                        for(var i = 0; i < roomTiles.length; i++) {
+                            this.grid[roomTiles[i]] = 0;
+                        }
+                    }
+                }
+
                 agentDirChangePercentage = Math.random();
                 if(agentDirChangePercentage > this.agentDirChangePercentage) {
                     agentDir = Math.floor(Math.random() * 4);
@@ -96,6 +120,10 @@ var Generator = {
                         this.ctx.fillStyle="#FF0000";
                         this.ctx.fillRect(x * 16, y * 16, 16, 16);
                     }
+                    else if(this.grid[tile] == 3) {
+                        this.ctx.fillStyle="#0000FF";
+                        this.ctx.fillRect(x * 16, y * 16, 16, 16);
+                    }
                 }
             }
         }
@@ -117,6 +145,34 @@ var Generator = {
                 startPosition = Math.floor(Math.random() * (gridTotal - 1));
             }
             return startPosition;
+        }
+
+        function getRoomTiles(tile, roomWidthMin, roomWidthMax, roomHeightMin, roomHeightMax, border, width) {
+            var curTile = tile;
+            var roomTiles = [];
+            var roomWidth = Math.floor(Math.random() * (roomWidthMax - roomWidthMin + 1)) + roomWidthMin;
+            var roomHeight = Math.floor(Math.random() * (roomHeightMax - roomHeightMin + 1)) + roomHeightMin;
+
+            var startPosition = curTile - ((curTile - (Math.floor(roomHeight / 2))) - (curTile - ((Math.floor(roomWidth / 2) * width))));
+
+            for(var x = 0; x < roomWidth; x++) {
+                for(var y = 0; y < roomHeight; y++) {
+                    var t = startPosition + y + (x * width);
+                    //console.log(t);
+                    if(isBorderTile(t, border)) {
+                        return [];
+                    }
+                    roomTiles.push(t);
+                }
+            }
+            /*console.log({
+                width: roomWidth,
+                height: roomHeight,
+                start: startPosition,
+                tiles: roomTiles
+            })*/
+
+            return roomTiles;
         }
 
     }

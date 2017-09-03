@@ -9,8 +9,13 @@ window.addEventListener('resize', resizeCanvas, false);
 grid.init({
     width: 35,
     height: 35,
-    agentMaxRunTime: 50,
-    agentDirChangePercentage: 0.25
+    roomWidthMin: 4,
+    roomWidthMax: 7,
+    roomHeightMin: 4,
+    roomHeightMax: 7,
+    agentMaxRunTime: 100,
+    agentDirChangePercentage: 0.75,
+    agentRoomPlacementPercentage: 0.95
 });
 
 grid.generate();
